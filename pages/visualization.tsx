@@ -7,8 +7,8 @@ import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
-import RadioGroup from '@mui/material/RadioGroup';
-import Radio from '@mui/material/Radio';
+import FormGroup from '@mui/material/FormGroup';
+import Checkbox from '@mui/material/Checkbox';
 import {Footer} from '../components/Footer';
 import {GoogleMap, Location} from '../components/GoogleMap';
 
@@ -25,11 +25,17 @@ type VisualizationProps = {
   data: Record<MapType, Location[]>
 }
 
-const Visualization: NextPage<VisualizationProps> = ({googleApiKey, data}) => {
-  const [mapType, setMapType] = useState<MapType>(MAP_TYPES.DEVICES)
+const defaultDataDisplayed = {
+  [MAP_TYPES.NOISE]: true,
+  [MAP_TYPES.POPULATION]: true,
+  [MAP_TYPES.DEVICES]: false
+}
 
-  const handleMapTypeChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setMapType(e.target.value as MapType)
+const Visualization: NextPage<VisualizationProps> = ({googleApiKey, data}) => {
+  const [isDataDisplayed, setIsDataDisplayed] = useState<Partial<Record<MapType, boolean>>>(defaultDataDisplayed)
+
+  const handleDisplayedDataToggle = (e: ChangeEvent<HTMLInputElement>) => {
+    setIsDataDisplayed((previous) => ({...previous, [e.target.name]: e.target.checked}))
   }
 
   return (
@@ -38,23 +44,19 @@ const Visualization: NextPage<VisualizationProps> = ({googleApiKey, data}) => {
 
         {googleApiKey && (
           <Wrapper apiKey={googleApiKey} libraries={['visualization']}>
-            <GoogleMap mapType={mapType} data={data[mapType]}/>
+            <GoogleMap isDataDisplayed={isDataDisplayed} data={data}/>
           </Wrapper>
         )}
         
         <FormControl className={styles.radio}>
-          <FormLabel id="demo-radio-buttons-group-label">Map type</FormLabel>
-          <RadioGroup
-            row
-            aria-labelledby="demo-radio-buttons-group-label"
-            name="radio-buttons-group"
-            value={mapType}
-            onChange={handleMapTypeChange}
-          >
-            {Object.values(MAP_TYPES).map(
-              (option) => <FormControlLabel key={option} value={option} control={<Radio />} label={capitalizeFirstLetter(option)} />
+          <FormLabel id="demo-checkboxes-group-label">Displayed data</FormLabel>
+          <FormGroup row aria-labelledby="demo-checkboxes-group-label">
+            {Object.values(MAP_TYPES).map((option) => 
+              <FormControlLabel key={option} label={capitalizeFirstLetter(option)} control={
+                <Checkbox checked={isDataDisplayed[option]} name={option} onChange={handleDisplayedDataToggle}/>
+              }/>
             )}
-          </RadioGroup>
+          </FormGroup>
           <Button href="/" variant="contained" size="large" className={styles.radio}>Back</Button>
         </FormControl>
 

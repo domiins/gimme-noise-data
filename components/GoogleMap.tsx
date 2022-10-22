@@ -41,9 +41,9 @@ const renderCirclesLayer = (
   })
 }
 
-type GoogleMapProps = {mapType: MapType, data: Location[]}
+type GoogleMapProps = {isDataDisplayed: Partial<Record<MapType, boolean>>, data: Record<MapType, Location[]>}
 
-export const GoogleMap: FC<GoogleMapProps> = ({mapType, data}) => {
+export const GoogleMap: FC<GoogleMapProps> = ({isDataDisplayed, data}) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -57,9 +57,9 @@ export const GoogleMap: FC<GoogleMapProps> = ({mapType, data}) => {
       zoom: 13,
     })
 
-    if (mapType === MAP_TYPES.NOISE) renderHeatmapLayer(google, data, {map, radius: 20})
-    if (mapType === MAP_TYPES.POPULATION) renderCirclesLayer(google, data, {map})
-  }, [ref, mapType, data])
+    if (isDataDisplayed[MAP_TYPES.NOISE]) renderHeatmapLayer(google, data[MAP_TYPES.NOISE], {map, radius: 20})
+    if (isDataDisplayed[MAP_TYPES.POPULATION]) renderCirclesLayer(google, data[MAP_TYPES.POPULATION], {map})
+  }, [ref, isDataDisplayed, data])
 
   return <div style={{ height: '70vh', width: '80%' }} ref={ref} id="map" />
 }
