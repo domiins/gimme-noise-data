@@ -68,7 +68,8 @@ export default Visualization
 
 
 // const PLACEHOLDER_HEATMAP_DATA = [[48.146, 17.108], [48.146, 17.109], [48.146, 17.110], [48.146, 17.111], [48.146, 17.112]]
-const PLACEHOLDER_HEATMAP_DATA = lineToPoints({startX: 48.146, startY: 17.108, endX: 48.146, endY: 17.112}).map((point) => ({point, weight: 1}))
+// const PLACEHOLDER_HEATMAP_DATA = lineToPoints({startX: 48.146, startY: 17.108, endX: 48.146, endY: 17.112}).map((point) => ({point, weight: 1}))
+const PLACEHOLDER_POPULATION_DATA = [{point: [48.146, 17.108], weight: 0}, {point: [48.142773, 17.154488], weight: 2}]
 
 export const getStaticProps: GetStaticProps = () => {
   const roadsData = map(roadsRawData, (data, roadType) => {
@@ -83,7 +84,7 @@ export const getStaticProps: GetStaticProps = () => {
       googleApiKey: process.env.GOOGLE_API_KEY,
       data: {
         noise: noiseData,
-        population: PLACEHOLDER_HEATMAP_DATA,
+        population: PLACEHOLDER_POPULATION_DATA,
         devices: []
       }
     },

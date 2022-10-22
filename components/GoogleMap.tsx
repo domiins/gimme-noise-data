@@ -23,6 +23,24 @@ const renderHeatmapLayer = (
   })
 }
 
+const CIRCLE_COLOURS = ['White', 'Yellow', 'Red', 'Purple', 'Black']
+
+const renderCirclesLayer = (
+  google: typeof window.google,
+  data: Location[],
+  options: google.maps.CircleOptions
+) => {
+  data.map(({point, weight = 0}) => {
+  console.log(CIRCLE_COLOURS[weight])
+    new google.maps.Circle({
+      center: new google.maps.LatLng(point[0], point[1]),
+      radius: 500,
+      fillColor: CIRCLE_COLOURS[weight],
+      ...options,
+    })
+  })
+}
+
 type GoogleMapProps = {mapType: MapType, data: Location[]}
 
 export const GoogleMap: FC<GoogleMapProps> = ({mapType, data}) => {
@@ -39,7 +57,8 @@ export const GoogleMap: FC<GoogleMapProps> = ({mapType, data}) => {
       zoom: 13,
     })
 
-    if (mapType === MAP_TYPES.NOISE  || mapType === MAP_TYPES.POPULATION) renderHeatmapLayer(google, data, {map, radius: 20})
+    if (mapType === MAP_TYPES.NOISE) renderHeatmapLayer(google, data, {map, radius: 20})
+    if (mapType === MAP_TYPES.POPULATION) renderCirclesLayer(google, data, {map})
   }, [ref, mapType, data])
 
   return <div style={{ height: '70vh', width: '80%' }} ref={ref} id="map" />
