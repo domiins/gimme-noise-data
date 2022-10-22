@@ -14,11 +14,17 @@ import {GoogleMap} from '../components/GoogleMap';
 import styles from '../styles/Visualization.module.css'
 import {MAP_TYPES, MapType} from '../constants';
 
+import roadsRawData from '../data/roads.json'
+import { lineToPoints, rawToLine, Point } from '../utils/geometryUtils';
+
 const capitalizeFirstLetter = (string: string) => string.charAt(0).toUpperCase() + string.slice(1);
 
-type VisualizationProps = {googleApiKey?: string}
+type VisualizationProps = {
+  googleApiKey?: string
+  data: Record<MapType, Point[]>
+}
 
-const Visualization: NextPage<VisualizationProps> = ({googleApiKey}) => {
+const Visualization: NextPage<VisualizationProps> = ({googleApiKey, data}) => {
   const [mapType, setMapType] = useState<MapType>(MAP_TYPES.DEVICES)
 
   const handleMapTypeChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -30,7 +36,9 @@ const Visualization: NextPage<VisualizationProps> = ({googleApiKey}) => {
       <main className="main">
 
         {googleApiKey && (
-          <Wrapper apiKey={googleApiKey} libraries={['visualization']}><GoogleMap mapType={mapType}/></Wrapper>
+          <Wrapper apiKey={googleApiKey} libraries={['visualization']}>
+            <GoogleMap mapType={mapType} data={data[mapType]}/>
+          </Wrapper>
         )}
         
         <FormControl className={styles.radio}>
@@ -58,10 +66,21 @@ const Visualization: NextPage<VisualizationProps> = ({googleApiKey}) => {
 export default Visualization
 
 
-export const getStaticProps: GetStaticProps = (context) => {
+// const PLACEHOLDER_HEATMAP_DATA = [[48.146, 17.108], [48.146, 17.109], [48.146, 17.110], [48.146, 17.111], [48.146, 17.112]]
+const PLACEHOLDER_HEATMAP_DATA = lineToPoints({startX: 48.146, startY: 17.108, endX: 48.146, endY: 17.112})
+
+export const getStaticProps: GetStaticProps = () => {
+  const roadsData = Object.values(roadsRawData).flatMap((roadType) => roadType.flatMap((road) => lineToPoints(rawToLine(road))))
+  const noiseData = roadsData
+
   return {
     props: {
-      googleApiKey: process.env.GOOGLE_API_KEY
+      googleApiKey: process.env.GOOGLE_API_KEY,
+      data: {
+        noise: noiseData,
+        population: PLACEHOLDER_HEATMAP_DATA,
+        devices: []
+      }
     },
   }
 }
