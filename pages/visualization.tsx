@@ -17,6 +17,7 @@ import styles from '../styles/Visualization.module.css'
 import {MAP_TYPES, MapType, ROAD_WEIGHTS} from '../constants';
 
 import roadsRawData from '../data/roads.json'
+import populationRawData from '../data/population_density.json'
 import { lineToPoints, rawToLine } from '../utils/geometryUtils';
 import { evaluatePopulationAreas } from '../model';
 
@@ -88,14 +89,6 @@ const Visualization: NextPage<VisualizationProps> = ({googleApiKey, data}) => {
 
 export default Visualization
 
-// const PLACEHOLDER_HEATMAP_DATA = [[48.146, 17.108], [48.146, 17.109], [48.146, 17.110], [48.146, 17.111], [48.146, 17.112]]
-// const PLACEHOLDER_HEATMAP_DATA = lineToPoints({startX: 48.146, startY: 17.108, endX: 48.146, endY: 17.112}).map((point) => ({point, weight: 1}))
-const PLACEHOLDER_POPULATION_DATA = [
-  {point: [48.146, 17.108], weight: 2.5},
-  {point: [48.142773, 17.12488], weight: 1},
-  {point: [48.142773, 17.154488], weight: 0}
-]
-
 export const getStaticProps: GetStaticProps = () => {
   const roadsData = map(roadsRawData, (data, roadType) => {
     const weight = ROAD_WEIGHTS[roadType]
@@ -103,7 +96,10 @@ export const getStaticProps: GetStaticProps = () => {
   }).flat()
   
   const noiseData = roadsData
-  const populationData = PLACEHOLDER_POPULATION_DATA
+  
+  const populationData = map(populationRawData, (data, weight) => 
+    data.map((point) => ({point: [parseFloat(point.x), parseFloat(point.y)], weight: parseInt(weight)}))
+  ).flat()
 
   const orderedPopulationData = evaluatePopulationAreas(populationData, noiseData)
   const devices = orderedPopulationData.map(({point}) => point)

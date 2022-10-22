@@ -29,7 +29,8 @@ const renderHeatmapLayer = (
   })
 }
 
-const CIRCLE_COLOURS = ['White', 'Yellow', 'Red', 'Purple', 'Black']
+// const CIRCLE_COLOURS = ['#F5CBA7', '#F0B27A', '#EB984E', '#E67E22', '#CA6F1E', '#935116']
+const CIRCLE_COLOURS = ['White', 'Yellow', 'Orange', 'Red', 'Purple', 'Black']
 const renderCirclesLayer = (
   google: typeof window.google,
   data: Location[],
@@ -39,6 +40,8 @@ const renderCirclesLayer = (
     new google.maps.Circle({
       center: new google.maps.LatLng(point[0], point[1]),
       radius: 500,
+      strokeOpacity: 0.1,
+      fillOpacity: 0.5,
       fillColor: CIRCLE_COLOURS[weight],
       ...options,
     })
