@@ -4,7 +4,7 @@ import {Point} from '../utils/geometryUtils';
 
 export type Location = {
   point: Point
-  weight?: number
+  weight: number
 }
 
 export type Data = {
