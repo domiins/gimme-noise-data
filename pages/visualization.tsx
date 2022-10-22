@@ -12,25 +12,17 @@ import {Footer} from '../components/Footer';
 import {GoogleMap} from '../components/GoogleMap';
 
 import styles from '../styles/Visualization.module.css'
+import {MAP_TYPES, MapType} from '../constants';
 
 const capitalizeFirstLetter = (string: string) => string.charAt(0).toUpperCase() + string.slice(1);
-
-const MAP_TYPES = {
-  NOISE: 'noise',
-  POPULATION: 'population',
-  DEVICES: 'devices'
-} as const
-
-type Enum<T> = T[keyof T]
-type MapTypes = Enum<typeof MAP_TYPES>
 
 type VisualizationProps = {googleApiKey?: string}
 
 const Visualization: NextPage<VisualizationProps> = ({googleApiKey}) => {
-  const [mapType, setMapType] = useState<MapTypes>(MAP_TYPES.DEVICES)
+  const [mapType, setMapType] = useState<MapType>(MAP_TYPES.DEVICES)
 
   const handleMapTypeChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setMapType(e.target.value as MapTypes)
+    setMapType(e.target.value as MapType)
   }
 
   return (
@@ -38,7 +30,7 @@ const Visualization: NextPage<VisualizationProps> = ({googleApiKey}) => {
       <main className="main">
 
         {googleApiKey && (
-          <Wrapper apiKey={googleApiKey}><GoogleMap/></Wrapper>
+          <Wrapper apiKey={googleApiKey} libraries={['visualization']}><GoogleMap mapType={mapType}/></Wrapper>
         )}
         
         <FormControl className={styles.radio}>
@@ -50,7 +42,9 @@ const Visualization: NextPage<VisualizationProps> = ({googleApiKey}) => {
             value={mapType}
             onChange={handleMapTypeChange}
           >
-            {Object.values(MAP_TYPES).map((option) => <FormControlLabel key={option} value={option} control={<Radio />} label={capitalizeFirstLetter(option)} />)}
+            {Object.values(MAP_TYPES).map(
+              (option) => <FormControlLabel key={option} value={option} control={<Radio />} label={capitalizeFirstLetter(option)} />
+            )}
           </RadioGroup>
           <Button href="/" variant="contained" size="large" className={styles.radio}>Back</Button>
         </FormControl>
