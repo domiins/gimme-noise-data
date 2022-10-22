@@ -75,12 +75,15 @@ export const GoogleMap: FC<GoogleMapProps> = ({isDataDisplayed, data}) => {
     const map = new google.maps.Map(ref.current, {
       center: bratislava,
       zoom: 13,
+      zoomControl: false,
+      disableDoubleClickZoom: true,
+      mapTypeId: 'hybrid'
     })
 
-    if (isDataDisplayed[MAP_TYPES.NOISE]) renderHeatmapLayer(google, data[MAP_TYPES.NOISE], {map, radius: 20})
-    if (isDataDisplayed[MAP_TYPES.POPULATION]) renderCirclesLayer(google, data[MAP_TYPES.POPULATION], {map})
+    if (isDataDisplayed[MAP_TYPES.NOISE]) renderHeatmapLayer(google, data[MAP_TYPES.NOISE], {map, radius: 10})
+    if (isDataDisplayed[MAP_TYPES.POPULATION]) renderHeatmapLayer(google, data[MAP_TYPES.POPULATION], {map, radius: 100, gradient: ['rgba(255,255,255,0)', '#E0FFFF', '#87CEFA', '#00BFFF', '#1E90FF', '#4169E1', '#0000FF']})
     if (isDataDisplayed[MAP_TYPES.DEVICES]) renderMarkersLayer(google, data[MAP_TYPES.DEVICES], {map})
   }, [ref, isDataDisplayed, data])
 
-  return <div style={{ height: '70vh', width: '80%' }} ref={ref} id="map" />
+  return <div style={{ height: '70vh', width: '100%' }} ref={ref} id="map" />
 }

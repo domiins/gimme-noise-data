@@ -29,12 +29,12 @@ type VisualizationProps = {
 }
 
 const DEFAULT_DATA_DISPLAYED = {
-  [MAP_TYPES.NOISE]: false,
+  [MAP_TYPES.NOISE]: true,
   [MAP_TYPES.POPULATION]: false,
-  [MAP_TYPES.DEVICES]: true
+  [MAP_TYPES.DEVICES]: false
 }
 
-const DEFAULT_DEVICES_NUMBER = 1
+const DEFAULT_DEVICES_NUMBER = 5
 
 const Visualization: NextPage<VisualizationProps> = ({googleApiKey, data}) => {
   const [isDataDisplayed, setIsDataDisplayed] = useState<Partial<Record<MapType, boolean>>>(DEFAULT_DATA_DISPLAYED)
@@ -49,8 +49,8 @@ const Visualization: NextPage<VisualizationProps> = ({googleApiKey, data}) => {
   }
 
   return (
-    <div className="container">
-      <main className="main">
+    <div>
+      <main className={styles.main}>
 
         {googleApiKey && (
           <Wrapper apiKey={googleApiKey} libraries={['visualization']}>
