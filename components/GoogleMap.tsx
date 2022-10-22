@@ -7,6 +7,12 @@ export type Location = {
   weight?: number
 }
 
+export type Data = {
+  [MAP_TYPES.NOISE]: Location[]
+  [MAP_TYPES.POPULATION]: Location[]
+  [MAP_TYPES.DEVICES]: Location['point'][]
+}
+
 const renderHeatmapLayer = (
   google: typeof window.google,
   data: Location[],
@@ -24,14 +30,12 @@ const renderHeatmapLayer = (
 }
 
 const CIRCLE_COLOURS = ['White', 'Yellow', 'Red', 'Purple', 'Black']
-
 const renderCirclesLayer = (
   google: typeof window.google,
   data: Location[],
   options: google.maps.CircleOptions
 ) => {
   data.map(({point, weight = 0}) => {
-  console.log(CIRCLE_COLOURS[weight])
     new google.maps.Circle({
       center: new google.maps.LatLng(point[0], point[1]),
       radius: 500,
@@ -41,7 +45,20 @@ const renderCirclesLayer = (
   })
 }
 
-type GoogleMapProps = {isDataDisplayed: Partial<Record<MapType, boolean>>, data: Record<MapType, Location[]>}
+const renderMarkersLayer = (
+  google: typeof window.google,
+  data: Location['point'][],
+  options: google.maps.CircleOptions
+) => {
+  data.map((point) => {
+    new google.maps.Marker({
+      position: new google.maps.LatLng(point[0], point[1]),
+      ...options,
+    })
+  })
+}
+
+type GoogleMapProps = {isDataDisplayed: Partial<Record<MapType, boolean>>, data: Data}
 
 export const GoogleMap: FC<GoogleMapProps> = ({isDataDisplayed, data}) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -59,6 +76,7 @@ export const GoogleMap: FC<GoogleMapProps> = ({isDataDisplayed, data}) => {
 
     if (isDataDisplayed[MAP_TYPES.NOISE]) renderHeatmapLayer(google, data[MAP_TYPES.NOISE], {map, radius: 20})
     if (isDataDisplayed[MAP_TYPES.POPULATION]) renderCirclesLayer(google, data[MAP_TYPES.POPULATION], {map})
+    if (isDataDisplayed[MAP_TYPES.DEVICES]) renderMarkersLayer(google, data[MAP_TYPES.DEVICES], {map})
   }, [ref, isDataDisplayed, data])
 
   return <div style={{ height: '70vh', width: '80%' }} ref={ref} id="map" />

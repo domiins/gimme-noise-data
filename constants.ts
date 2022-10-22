@@ -1,9 +1,9 @@
 import { Enum } from "./tsUtils"
 
 export const MAP_TYPES = {
-    NOISE: 'noise',
+    NOISE: 'noise polution',
     POPULATION: 'population',
-    DEVICES: 'devices'
+    DEVICES: 'sensore placement'
   } as const
   
 export type MapType = Enum<typeof MAP_TYPES>

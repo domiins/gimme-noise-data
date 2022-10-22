@@ -1,5 +1,5 @@
 import {useState, ChangeEvent} from 'react'
-import {map} from 'lodash'
+import {map, orderBy} from 'lodash'
 import type {NextPage, GetStaticProps} from 'next'
 import {Wrapper} from "@googlemaps/react-wrapper"
 import Button from '@mui/material/Button';
@@ -10,7 +10,7 @@ import FormLabel from '@mui/material/FormLabel';
 import FormGroup from '@mui/material/FormGroup';
 import Checkbox from '@mui/material/Checkbox';
 import {Footer} from '../components/Footer';
-import {GoogleMap, Location} from '../components/GoogleMap';
+import {GoogleMap, Data, Location} from '../components/GoogleMap';
 
 import styles from '../styles/Visualization.module.css'
 import {MAP_TYPES, MapType, ROAD_WEIGHTS} from '../constants';
@@ -22,7 +22,7 @@ const capitalizeFirstLetter = (string: string) => string.charAt(0).toUpperCase()
 
 type VisualizationProps = {
   googleApiKey?: string
-  data: Record<MapType, Location[]>
+  data: Data
 }
 
 const defaultDataDisplayed = {
@@ -69,9 +69,16 @@ const Visualization: NextPage<VisualizationProps> = ({googleApiKey, data}) => {
 export default Visualization
 
 
+const bestLocation = (noiseData: Location[]) => (({point, weight: population}: Location) => {
+  // TODO!!
+  return population || 0
+})
+
 // const PLACEHOLDER_HEATMAP_DATA = [[48.146, 17.108], [48.146, 17.109], [48.146, 17.110], [48.146, 17.111], [48.146, 17.112]]
 // const PLACEHOLDER_HEATMAP_DATA = lineToPoints({startX: 48.146, startY: 17.108, endX: 48.146, endY: 17.112}).map((point) => ({point, weight: 1}))
 const PLACEHOLDER_POPULATION_DATA = [{point: [48.146, 17.108], weight: 0}, {point: [48.142773, 17.154488], weight: 2}]
+
+const DEVICES_NUMBER = 1
 
 export const getStaticProps: GetStaticProps = () => {
   const roadsData = map(roadsRawData, (data, roadType) => {
@@ -80,14 +87,18 @@ export const getStaticProps: GetStaticProps = () => {
   }).flat()
   
   const noiseData = roadsData
+  const populationData = PLACEHOLDER_POPULATION_DATA
+
+  const orderedPopulationData = orderBy(populationData, bestLocation(noiseData), ['desc'])
+  const devices = orderedPopulationData.slice(DEVICES_NUMBER).map(({point}) => point)
 
   return {
     props: {
       googleApiKey: process.env.GOOGLE_API_KEY,
       data: {
-        noise: noiseData,
-        population: PLACEHOLDER_POPULATION_DATA,
-        devices: []
+        [MAP_TYPES.NOISE]: noiseData,
+        [MAP_TYPES.POPULATION]: populationData,
+        [MAP_TYPES.DEVICES]: devices
       }
     },
   }
