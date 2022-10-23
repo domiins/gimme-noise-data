@@ -24,6 +24,16 @@ export const ROAD_WEIGHTS = {
   [ROAD_TYPES.FOURTH_CLASS]: 1
 } as const
 
+const RAILWAY_TYPES = {
+  RAIL: 'rail',
+  TRAM: 'tram'
+};
+
+export const RAILWAY_WEIGHTS = {
+  [RAILWAY_TYPES.RAIL]: 9,
+  [RAILWAY_TYPES.TRAM]: 7
+};
+
 
 // 0.0001 = 7.419 m
 // 0.001  = 74.19 m

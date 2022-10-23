@@ -14,10 +14,11 @@ import {Footer} from '../components/Footer';
 import {GoogleMap, Data} from '../components/GoogleMap';
 
 import styles from '../styles/Visualization.module.css'
-import {MAP_TYPES, MapType, ROAD_WEIGHTS} from '../constants';
+import {MAP_TYPES, MapType, ROAD_WEIGHTS, RAILWAY_WEIGHTS} from '../constants';
 
 import roadsRawData from '../data/roads.json'
 import populationRawData from '../data/population_density.json'
+import railwayRawData from '../data/railways.json'
 import { lineToPoints, rawToLine } from '../utils/geometryUtils';
 import { evaluatePopulationAreas } from '../model';
 
@@ -94,8 +95,13 @@ export const getStaticProps: GetStaticProps = () => {
     const weight = ROAD_WEIGHTS[roadType]
     return data.flatMap((road) => lineToPoints(rawToLine(road))).map((point) => ({point, weight}))
   }).flat()
+
+  const railwayData = map(railwayRawData, (data, railwayType) => {
+    const weight = RAILWAY_WEIGHTS[railwayType]
+    return data.flatMap((railway) => lineToPoints(rawToLine(railway))).map((point) => ({point, weight}))
+  }).flat()
   
-  const noiseData = roadsData
+  const noiseData = railwayData.concat(roadsData);
   
   const populationData = map(populationRawData, (data, weight) => 
     data.map((point) => ({point: [parseFloat(point.x), parseFloat(point.y)], weight: parseInt(weight)}))
