@@ -65,7 +65,7 @@ const Visualization: NextPage<VisualizationProps> = ({googleApiKey, data}) => {
           <FormLabel id="demo-checkboxes-group-label">Displayed data</FormLabel>
           <FormGroup row aria-labelledby="demo-checkboxes-group-label">
             {Object.values(MAP_TYPES).map((option) => 
-              <FormControlLabel key={option} label={capitalizeFirstLetter(option)} control={
+              <FormControlLabel key={option} label={capitalizeFirstLetter(option)} className={styles.radioLabel} control={
                 <Checkbox checked={isDataDisplayed[option]} name={option} onChange={handleDisplayedDataToggle}/>
               }/>
             )}
